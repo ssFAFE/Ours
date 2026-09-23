@@ -1,9 +1,10 @@
 import { useMemo, useState, type FormEvent } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from 'wouter';
-import { ArrowUpRight, Check, Image as ImageIcon, MessageCircle, Play, Plus, Quote, Send, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Check, Image as ImageIcon, MessageCircle, Play, Plus, Send, Sparkles } from 'lucide-react';
 import { useCreateMood, useCreateTask, useGetCoupleOverview, useGetMemories, useGetTasks } from '@workspace/api-client-react';
 import { HimShell } from '@/components/HimShell';
+import { CoupleProfiles } from '@/components/CoupleProfiles';
 import { ErrorState, LoadingState } from '@/components/LoadingState';
 
 const moodChoices = [
@@ -17,10 +18,6 @@ const moodChoices = [
 function formatMemoryDate(date: string) {
   const parsed = new Date(date);
   return Number.isNaN(parsed.getTime()) ? date : new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric' }).format(parsed);
-}
-
-function initials(names: string) {
-  return names.split(/&|and/i).map((name) => name.trim()[0]).filter(Boolean).join('').slice(0, 2).toUpperCase();
 }
 
 export default function Home() {
@@ -67,17 +64,12 @@ export default function Home() {
   return (
     <HimShell>
       <div className="page-enter">
+        <CoupleProfiles />
         <header className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
-            <p className="mono mb-3 text-[10px] uppercase tracking-[.2em] text-primary">Tuesday, your place is ready</p>
-            <h1 className="display text-[clamp(2.4rem,5vw,4.45rem)] font-semibold leading-[.98] tracking-[-.045em]">Good morning,<br /><span className="text-primary">{overview.names.split('&')[0]?.trim() || 'you two'}.</span></h1>
-            <p className="mt-4 max-w-lg text-sm leading-6 text-muted-foreground">A soft corner for the small things, the big things, and everything that makes the distance feel shorter.</p>
-          </div>
-          <div className="flex items-center gap-2 self-start rounded-full border border-border bg-card px-3 py-2 sm:self-auto" data-testid="status-couple">
-            <span className="grid size-8 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{initials(overview.names)}</span>
-            <span className="text-xs font-semibold text-foreground">{overview.names}</span>
-            <span className="size-1.5 rounded-full bg-[#68a878] soft-pulse" />
-            <span className="text-xs text-muted-foreground">together</span>
+            <p className="mono mb-3 text-[10px] uppercase tracking-[.2em] text-primary">Ahmed + Mariam</p>
+            <h1 className="display text-[clamp(2.4rem,5vw,4.45rem)] font-semibold leading-[.98] tracking-[-.045em]">Your private<br /><span className="text-primary">space for two.</span></h1>
+            <p className="mt-4 max-w-lg text-sm leading-6 text-muted-foreground">A private place for your moods, memories, reels, chat, and shared plans.</p>
           </div>
         </header>
 
@@ -88,18 +80,18 @@ export default function Home() {
             <div className="relative z-[1] flex h-full flex-col justify-between">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="mono text-[10px] uppercase tracking-[.2em] text-primary-foreground/65">The long lovely count</p>
+                  <p className="mono text-[10px] uppercase tracking-[.2em] text-primary-foreground/65">Together counter</p>
                   <p className="mt-5 display text-7xl font-semibold leading-none tracking-[-.06em] sm:text-8xl" data-testid="text-together-days">{overview.togetherDays}</p>
-                  <p className="mt-2 text-sm text-primary-foreground/75">days of choosing each other</p>
+                  <p className="mt-2 text-sm text-primary-foreground/75">days together</p>
                 </div>
                 <div className="rounded-2xl bg-primary-foreground/10 px-3 py-2 text-right">
-                  <p className="mono text-[9px] uppercase tracking-[.15em] text-primary-foreground/60">Since</p>
+                  <p className="mono text-[9px] uppercase tracking-[.15em] text-primary-foreground/60">Anniversary</p>
                   <p className="mt-1 text-sm font-semibold">{overview.anniversary}</p>
                 </div>
               </div>
               <div className="mt-10 flex items-end justify-between gap-4">
-                <p className="max-w-[260px] font-serif text-lg leading-6 text-primary-foreground/90">“Whatever the day brings, it belongs to us.”</p>
-                <div className="grid size-12 shrink-0 place-items-center rounded-full bg-secondary text-secondary-foreground"><Quote size={20} /></div>
+                <p className="max-w-[260px] font-serif text-lg leading-6 text-primary-foreground/90">Add your anniversary to start.</p>
+                <div className="grid size-12 shrink-0 place-items-center rounded-full bg-secondary text-secondary-foreground"><span className="text-lg">+</span></div>
               </div>
             </div>
           </article>
@@ -152,7 +144,7 @@ export default function Home() {
         <section className="grid gap-5 lg:grid-cols-[1fr_1.2fr]">
           <article className="rounded-[28px] border border-card-border bg-[#e4eee6] p-6" data-testid="card-prompt">
             <div className="flex items-center justify-between">
-              <p className="mono text-[10px] uppercase tracking-[.2em] text-muted-foreground">A question for two</p>
+               <p className="mono text-[10px] uppercase tracking-[.2em] text-muted-foreground">Daily prompt</p>
               <span className="grid size-8 place-items-center rounded-full bg-card text-primary"><Sparkles size={15} /></span>
             </div>
             <h2 className="display mt-8 max-w-md text-3xl font-semibold leading-[1.08]">“{overview.todayPrompt}”</h2>
@@ -161,18 +153,18 @@ export default function Home() {
 
           <article className="rounded-[28px] border border-card-border bg-card p-6 shadow-[var(--shadow-soft)]">
             <div className="mb-5 flex items-center justify-between">
-              <div><p className="mono text-[10px] uppercase tracking-[.2em] text-muted-foreground">Shared list</p><h2 className="display mt-1 text-2xl font-semibold">For our next chapter</h2></div>
+               <div><p className="mono text-[10px] uppercase tracking-[.2em] text-muted-foreground">Shared list</p><h2 className="display mt-1 text-2xl font-semibold">To-do & bucket list</h2></div>
               <span className="rounded-full bg-muted px-2.5 py-1 text-xs font-semibold text-muted-foreground" data-testid="text-task-count">{completedTasks}/{tasks.length || 0}</span>
             </div>
             {tasksQuery.isLoading ? <div className="skeleton h-16 rounded-2xl" /> : tasksQuery.isError ? <p className="rounded-xl bg-[#fff2e8] p-4 text-xs text-muted-foreground" data-testid="status-tasks-error">The list is taking a minute to appear.</p> : tasks.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-border p-5 text-center" data-testid="status-tasks-empty"><p className="display text-lg font-semibold">A blank page, for now.</p><p className="mt-1 text-xs text-muted-foreground">Add the first little plan you want to make real.</p></div>
+              <div className="rounded-2xl border border-dashed border-border p-5 text-center" data-testid="status-tasks-empty"><p className="display text-lg font-semibold">Nothing added yet.</p><p className="mt-1 text-xs text-muted-foreground">Add your first shared plan below.</p></div>
             ) : (
               <div className="space-y-2">
                 {tasks.slice(0, 3).map((task) => <div key={task.id} className="flex items-center gap-3 rounded-xl bg-muted/55 px-3 py-2.5" data-testid={`row-task-${task.id}`}><span className={`grid size-5 place-items-center rounded-full border ${task.completed ? 'border-primary bg-primary text-primary-foreground' : 'border-border'}`}>{task.completed && <Check size={12} />}</span><span className={`text-sm ${task.completed ? 'text-muted-foreground line-through' : 'text-foreground'}`}>{task.title}</span></div>)}
               </div>
             )}
             <form onSubmit={submitTask} className="mt-4 flex gap-2">
-              <input value={taskTitle} onChange={(event) => setTaskTitle(event.target.value)} placeholder="Add something lovely…" className="min-w-0 flex-1 rounded-xl border border-border bg-background px-3 py-2.5 text-xs outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/15" data-testid="input-new-task" />
+              <input value={taskTitle} onChange={(event) => setTaskTitle(event.target.value)} placeholder="Add a shared item" className="min-w-0 flex-1 rounded-xl border border-border bg-background px-3 py-2.5 text-xs outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/15" data-testid="input-new-task" />
               <button type="submit" disabled={!taskTitle.trim() || createTask.isPending} className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground disabled:opacity-40" data-testid="button-add-task"><Plus size={17} /></button>
             </form>
           </article>
@@ -180,7 +172,7 @@ export default function Home() {
 
         <section className="mt-5 rounded-[28px] border border-card-border bg-card p-6 shadow-[var(--shadow-soft)]">
           <div className="mb-5 flex items-end justify-between">
-            <div><p className="mono text-[10px] uppercase tracking-[.2em] text-muted-foreground">Recently held close</p><h2 className="display mt-1 text-2xl font-semibold">Little memories</h2></div>
+            <div><p className="mono text-[10px] uppercase tracking-[.2em] text-muted-foreground">Shared memories</p><h2 className="display mt-1 text-2xl font-semibold">Your memories</h2></div>
             <Link href="/memories" className="inline-flex items-center gap-1 text-xs font-bold text-primary no-underline hover:gap-2" data-testid="link-see-memories">See all <ArrowUpRight size={14} /></Link>
           </div>
           {memoriesQuery.isLoading ? <div className="grid grid-cols-2 gap-3 sm:grid-cols-4"><div className="skeleton h-36 rounded-2xl" /><div className="skeleton h-36 rounded-2xl" /><div className="hidden skeleton h-36 rounded-2xl sm:block" /><div className="hidden skeleton h-36 rounded-2xl sm:block" /></div> : memoriesQuery.isError ? <p className="text-sm text-muted-foreground" data-testid="status-memories-error">Memories are tucked away for a moment. Try the full gallery.</p> : memories.length === 0 ? <div className="rounded-2xl border border-dashed border-border p-8 text-center" data-testid="status-memories-empty"><p className="display text-lg font-semibold">Your first memory is waiting.</p><p className="mt-1 text-xs text-muted-foreground">This space will fill with the moments you keep.</p></div> : (

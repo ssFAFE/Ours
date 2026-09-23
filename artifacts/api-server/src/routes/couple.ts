@@ -13,48 +13,28 @@ const router: IRouter = Router();
 
 const overview = {
   names: "Ahmed & Mariam",
-  anniversary: "2023-06-17",
-  togetherDays: 1195,
-  distanceKm: 14,
-  currentMood: "Soft & happy",
-  photoStreak: 12,
-  chatStreak: 28,
-  reelsStreak: 7,
-  todayPrompt: "What made you smile today?",
+  anniversary: "Add your date",
+  togetherDays: 0,
+  distanceKm: 0,
+  currentMood: "No mood yet",
+  photoStreak: 0,
+  chatStreak: 0,
+  reelsStreak: 0,
+  todayPrompt: "Add today's prompt",
 };
 
-const memories = [
-  {
-    id: 1,
-    title: "Alexandria, at golden hour",
-    date: "June 16, 2026",
-    type: "photo" as const,
-    gradient: "sunset",
-  },
-  {
-    id: 2,
-    title: "A little voice note",
-    date: "June 12, 2026",
-    type: "note" as const,
-    gradient: "lavender",
-  },
-  {
-    id: 3,
-    title: "That café we found",
-    date: "June 07, 2026",
-    type: "video" as const,
-    gradient: "peach",
-  },
-];
+const memories: Array<{
+  id: number;
+  title: string;
+  date: string;
+  type: "photo" | "video" | "note";
+  gradient: string;
+}> = [];
 
-const tasks = [
-  { id: 1, title: "Plan our next weekend escape", completed: false },
-  { id: 2, title: "Print our favorite photo", completed: true },
-  { id: 3, title: "Try the new ramen place", completed: false },
-];
+const tasks: Array<{ id: number; title: string; completed: boolean }> = [];
 
 let nextMoodId = 1;
-let nextTaskId = 4;
+let nextTaskId = 1;
 
 router.get("/couple/overview", (_req, res) => {
   res.json(GetCoupleOverviewResponse.parse(overview));

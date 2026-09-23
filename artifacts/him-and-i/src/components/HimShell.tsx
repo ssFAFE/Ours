@@ -15,9 +15,9 @@ export function HimShell({ children }: HimShellProps) {
   const [location] = useLocation();
   return (
     <div className="paper-grain min-h-[100dvh] bg-background">
-      <aside className="fixed inset-y-0 left-0 z-10 hidden w-[236px] flex-col border-r border-border bg-[#eee8d9]/90 px-5 py-6 lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-10 hidden w-[236px] flex-col border-r border-border bg-[#fff0f6]/95 px-5 py-6 lg:flex">
         <Link href="/" className="mb-12 flex items-center gap-3 no-underline" data-testid="link-brand">
-          <span className="relative grid size-10 place-items-center rounded-[14px] bg-primary text-primary-foreground shadow-[0_8px_18px_rgba(64,74,155,.22)]">
+           <span className="relative grid size-10 place-items-center rounded-[14px] bg-primary text-primary-foreground shadow-[0_8px_18px_rgba(221,49,119,.28)]">
             <Heart size={18} fill="currentColor" strokeWidth={1.8} />
             <span className="absolute -right-1 -top-1 size-2.5 rounded-full bg-secondary" />
           </span>
@@ -45,7 +45,7 @@ export function HimShell({ children }: HimShellProps) {
           })}
         </nav>
 
-        <div className="mt-auto rounded-[22px] bg-[#dfe8df] p-4">
+         <div className="mt-auto rounded-[22px] bg-gradient-to-br from-[#ffe0ec] via-[#fbdff4] to-[#e6dcff] p-4">
           <div className="mb-3 flex items-center justify-between">
             <span className="mono text-[9px] uppercase tracking-[.15em] text-muted-foreground">Tiny reminder</span>
             <Sparkles size={15} className="text-primary" />
