@@ -1,0 +1,34 @@
+Build a full-stack, highly customisable personal couple’s application named "Him&I" specifically designed for Ahmed and Mariam. The app should combine the best features of TikTok, Instagram, and WhatsApp into a sleek, shiny, ultra-fast, and fun user experience built exclusively for two users.
+
+Key Features & Specifications:
+
+1. Visual Design, Performance & Polish:
+   - Modern, high-end, and vibrant UI/UX with glowing glassmorphic elements, dynamic gradients, and fluid 60fps micro-animations.
+   - Ultra-smooth, zero-lag interface with skeleton loaders, smart lazy loading for media, optimized video streaming, and instant page transitions.
+   - Fully customizable themes: allow custom accent colors, background wallpapers, custom app icons, dynamic dark/light modes, and personalized sound effects.
+   - Dedicated "Ahmed & Mariam" personal branding throughout the interface (e.g., custom anniversary counter, interactive couple avatars, and live mood badges).
+
+2. Media Feed & Short Videos (TikTok + Instagram Reels Style):
+   - A dedicated vertical short-form video feed ("Our Reels") to upload, stream, and save favorite video memories with continuous, seamless auto-scroll.
+   - Embed/import support for links from TikTok and Instagram Reels to watch directly within the app.
+   - Dual media player: feature a "Watch Together" synchronized mode for both users to watch videos and reaction clips simultaneously without buffering lag.
+   - Interactive media gallery with grid views, tagging, instant photo filter presets, and lightweight image caching.
+
+3. Chat, Calls & Communication (WhatsApp Style):
+   - Real-time, ultra-fast encrypted text chat powered by WebSockets (instant message delivery with zero latency).
+   - High-definition voice and video call functionality (using WebRTC or Agora integration) optimized for low bandwidth and crystal-clear audio/video.
+   - Rich chat features: voice notes with customizable playback speeds, custom emoji reactions, typing indicators, read receipts, and pinned messages.
+
+4. Gamified Streaks & Bonding System:
+   - Photo Streak System: Daily photo prompt exchange with streak counters, flame indicators, and milestone badges.
+   - Chat & Reels Streaks: Track daily active chatting and shared reel activity with dynamic progress bars and fun rewards.
+   - Interactive widgets: "How I'm Feeling Today" status wheel, shared daily mood tracker, distance widget, and shared To-Do/Bucket list.
+
+5. Customization & Personalization Controls:
+   - Complete admin controls for both Ahmed and Mariam to customize chat themes, nicknames, custom notification ringtones, and hidden secret vaults (password-protected memories).
+
+6. Tech Stack & Optimization Requirements:
+   - Mobile-first Progressive Web App (PWA) layout optimized for iOS and Android web views.
+   - Framework: Modern React (Vite) or Next.js with Tailwind CSS and Framer Motion for buttery-smooth visual animations.
+   - Backend & Database: Fast Express/Node.js or FastAPI backend connected to Supabase/Firebase with WebSockets for real-time sync.
+   - Code Quality & Reliability: Ensure full error handling, clean state management, cached API requests, and optimized code execution to prevent crashes, bugs, or UI freezes.

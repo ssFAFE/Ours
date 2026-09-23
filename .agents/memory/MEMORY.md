@@ -1,0 +1,1 @@
+- [Generated API client typing](api-client-dom-iterable.md) — Orval fetch helpers require `dom.iterable` in the client TypeScript lib settings.

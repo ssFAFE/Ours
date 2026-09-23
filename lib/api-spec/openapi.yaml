@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: couple
+    description: Shared couple space operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,81 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /couple/overview:
+    get:
+      operationId: getCoupleOverview
+      tags: [couple]
+      summary: Get the shared couple overview
+      responses:
+        "200":
+          description: Current couple dashboard state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CoupleOverview"
+  /couple/moods:
+    post:
+      operationId: createMood
+      tags: [couple]
+      summary: Save a mood update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoodInput"
+      responses:
+        "201":
+          description: Saved mood
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mood"
+  /couple/memories:
+    get:
+      operationId: getMemories
+      tags: [couple]
+      summary: Get recent shared memories
+      responses:
+        "200":
+          description: Recent shared memories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Memory"
+  /couple/tasks:
+    get:
+      operationId: getTasks
+      tags: [couple]
+      summary: Get shared bucket list items
+      responses:
+        "200":
+          description: Shared bucket list items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+    post:
+      operationId: createTask
+      tags: [couple]
+      summary: Add a shared bucket list item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskInput"
+      responses:
+        "201":
+          description: Created bucket list item
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +110,105 @@ components:
           type: string
       required:
         - status
+    CoupleOverview:
+      type: object
+      required:
+        - names
+        - anniversary
+        - togetherDays
+        - distanceKm
+        - currentMood
+        - photoStreak
+        - chatStreak
+        - reelsStreak
+        - todayPrompt
+      properties:
+        names:
+          type: string
+        anniversary:
+          type: string
+        togetherDays:
+          type: integer
+        distanceKm:
+          type: number
+        currentMood:
+          type: string
+        photoStreak:
+          type: integer
+        chatStreak:
+          type: integer
+        reelsStreak:
+          type: integer
+        todayPrompt:
+          type: string
+    Mood:
+      type: object
+      required:
+        - id
+        - person
+        - mood
+        - createdAt
+      properties:
+        id:
+          type: integer
+        person:
+          type: string
+          enum: [Ahmed, Mariam]
+        mood:
+          type: string
+        createdAt:
+          type: string
+    MoodInput:
+      type: object
+      required:
+        - person
+        - mood
+      properties:
+        person:
+          type: string
+          enum: [Ahmed, Mariam]
+        mood:
+          type: string
+          minLength: 1
+    Memory:
+      type: object
+      required:
+        - id
+        - title
+        - date
+        - type
+        - gradient
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        date:
+          type: string
+        type:
+          type: string
+          enum: [photo, video, note]
+        gradient:
+          type: string
+    Task:
+      type: object
+      required:
+        - id
+        - title
+        - completed
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        completed:
+          type: boolean
+    TaskInput:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          minLength: 1
 

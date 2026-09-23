@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Him&I"
+description = "A private, joyful couple space for Ahmed and Mariam to share moods, memories, streaks, reels, and everyday moments together."
+version = "1.0.0"
+id = "artifacts/him-and-i"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24559
+
+[services.development]
+run = "pnpm --filter @workspace/him-and-i run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/him-and-i", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/him-and-i/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24559"
+BASE_PATH = "/"

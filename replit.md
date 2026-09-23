@@ -1,6 +1,6 @@
-# [Project name]
+# Him&I
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Him&I is a private, mobile-first couple space for Ahmed and Mariam to share moods, memories, streaks, and everyday moments.
 
 ## Run & Operate
 
@@ -22,23 +22,28 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/him-and-i/src/` — the Him&I web app, routes, shell, dashboard, memories, reels, chat, and settings surfaces.
+- `artifacts/api-server/src/routes/couple.ts` — the first couple overview, moods, memories, and shared-list API.
+- `lib/api-spec/openapi.yaml` — the source-of-truth API contract used to generate typed client hooks.
+- `artifacts/him-and-i/src/index.css` — the shared Him&I visual theme and responsive styling.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The first slice uses a shared couple identity rather than local account flows; authentication can be added before private rollout.
+- The frontend consumes generated API hooks from the OpenAPI contract instead of hand-written request types.
+- Navigation is built mobile-first with a bottom dock on small screens and a persistent rail on larger screens.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+The current product slice includes a shared home dashboard with the anniversary counter, streaks, mood prompt, memories preview, shared list, and routes for Memories, Our Reels, Private Chat, and customization settings. The API already exposes the couple overview, mood submission, memories, and shared-list flows.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+The user requested a highly customizable private couple app for exactly Ahmed and Mariam, with a polished, vibrant, mobile-first experience.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- After changing `lib/api-spec/openapi.yaml`, run `pnpm --filter @workspace/api-spec run codegen` before using new client hooks.
 
 ## Pointers
 
