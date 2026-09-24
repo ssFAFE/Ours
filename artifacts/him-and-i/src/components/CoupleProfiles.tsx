@@ -2,53 +2,77 @@ import { useEffect, useState, type ChangeEvent } from 'react';
 import { ImagePlus, X } from 'lucide-react';
 
 type ProfileSlotProps = {
-  name: 'Ahmed' | 'Mariam';
+  name: string;
   accent: string;
+  storageKey: string;
 };
 
-function ProfileSlot({ name, accent }: ProfileSlotProps) {
-  const [preview, setPreview] = useState('');
+function ProfileSlot({ name, accent, storageKey }: ProfileSlotProps) {
+  const [photo, setPhoto] = useState<string>('');
 
+  // تحميل الصورة المحفوظة فور فتح المكون
   useEffect(() => {
-    return () => {
-      if (preview) URL.revokeObjectURL(preview);
-    };
-  }, [preview]);
+    const savedPhoto = localStorage.getItem(storageKey);
+    if (savedPhoto) {
+      setPhoto(savedPhoto);
+    }
+  }, [storageKey]);
 
+  // معالجة اختيار الصورة وتحويلها لـ Base64 لحفظها دائمًا
   function handlePhoto(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
-    if (preview) URL.revokeObjectURL(preview);
-    setPreview(URL.createObjectURL(file));
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64Image = reader.result as string;
+      setPhoto(base64Image);
+      localStorage.setItem(storageKey, base64Image);
+    };
+    reader.readAsDataURL(file);
   }
 
+  // إزالة الصورة مسحها من الـ Storage
   function removePhoto() {
-    if (preview) URL.revokeObjectURL(preview);
-    setPreview('');
+    setPhoto('');
+    localStorage.removeItem(storageKey);
   }
 
   return (
-    <div className="profile-slot group">
-      <label className="relative block cursor-pointer" htmlFor={`profile-photo-${name.toLowerCase()}`}>
-        <span className={`profile-photo ${accent} ${preview ? 'profile-photo-filled' : ''}`}>
-          {preview ? (
-            <img src={preview} alt={`${name}'s profile`} className="size-full object-cover" />
+    <div className="flex flex-col items-center gap-2 group relative">
+      <label 
+        htmlFor={`profile-photo-${storageKey}`}
+        className="relative block cursor-pointer transition-transform hover:scale-105 active:scale-95"
+      >
+        <div className={`size-20 rounded-full border-2 border-dashed flex items-center justify-center overflow-hidden transition-all ${accent} ${photo ? 'border-solid border-rose-400 shadow-md' : 'border-rose-200 bg-rose-50/50 hover:bg-rose-100/50'}`}>
+          {photo ? (
+            <img src={photo} alt={`${name}'s profile`} className="size-full object-cover" />
           ) : (
-            <ImagePlus size={22} strokeWidth={1.8} />
+            <div className="flex flex-col items-center gap-1 text-rose-400">
+              <ImagePlus size={22} strokeWidth={1.8} />
+              <span className="text-[10px] font-medium">إضافة</span>
+            </div>
           )}
-        </span>
-        {!preview && <span className="profile-add-label">Add photo</span>}
+        </div>
+
         <input
-          id={`profile-photo-${name.toLowerCase()}`}
+          id={`profile-photo-${storageKey}`}
           type="file"
           accept="image/png,image/jpeg,image/webp"
           className="sr-only"
           onChange={handlePhoto}
         />
       </label>
-      <span className="profile-name">{name}</span>
-      {preview && (
-        <button type="button" onClick={removePhoto} className="profile-remove" aria-label={`Remove ${name}'s photo`}>
+
+      <span className="text-xs font-semibold text-rose-950">{name}</span>
+
+      {photo && (
+        <button
+          type="button"
+          onClick={removePhoto}
+          className="absolute -top-1 -right-1 bg-rose-500 text-white rounded-full p-1 shadow-md hover:bg-rose-600 transition-all active:scale-90"
+          aria-label={`Remove ${name}'s photo`}
+        >
           <X size={12} />
         </button>
       )}
@@ -58,15 +82,16 @@ function ProfileSlot({ name, accent }: ProfileSlotProps) {
 
 export function CoupleProfiles() {
   return (
-    <section className="profiles-strip" aria-label="Couple profile photos">
-      <div>
-        <p className="mono text-[10px] uppercase tracking-[.2em] text-primary">Your profiles</p>
-        <p className="mt-1 text-xs text-muted-foreground">Add the photos you want to use.</p>
+    <section className="p-5 rounded-3xl bg-white/80 backdrop-blur-md border border-rose-100 shadow-sm my-4" aria-label="Couple profile photos">
+      <div className="mb-4 text-center sm:text-right">
+        <p className="text-xs font-bold uppercase tracking-wider text-rose-500">الملف الشخصي</p>
+        <p className="mt-0.5 text-xs text-stone-500">اختر الصور التي تود ظهورها لك ولشريكتك</p>
       </div>
-      <div className="flex items-start gap-4">
-        <ProfileSlot name="Ahmed" accent="profile-photo-blue" />
-        <span className="profile-join">+</span>
-        <ProfileSlot name="Mariam" accent="profile-photo-pink" />
+
+      <div className="flex items-center justify-center gap-6 pt-2">
+        <ProfileSlot name="أحمد" accent="border-blue-300" storageKey="user_photo_ahmed" />
+        <span className="text-xl font-bold text-rose-300">+</span>
+        <ProfileSlot name="مريم" accent="border-pink-300" storageKey="user_photo_mariam" />
       </div>
     </section>
   );

@@ -1,31 +1,191 @@
-import { ArrowLeft, ArrowUpRight, Clapperboard, Play, Sparkles } from 'lucide-react';
-import { Link } from 'wouter';
-import { HimShell } from '@/components/HimShell';
+import React, { useState, useEffect } from 'react';
+
+interface ReelItem {
+  id: string;
+  title: string;
+  url: string;
+  isFavorite: boolean;
+  dateAdded: string;
+}
 
 export default function Reels() {
+  const [reels, setReels] = useState<ReelItem[]>([]);
+  const [inputTitle, setInputTitle] = useState('');
+  const [inputUrl, setInputUrl] = useState('');
+  const [filter, setFilter] = useState<'all' | 'favorites'>('all');
+
+  useEffect(() => {
+    const saved = localStorage.getItem('him_her_reels_v2');
+    if (saved) {
+      try {
+        setReels(JSON.parse(saved));
+      } catch (e) {
+        console.error('Failed to parse saved reels', e);
+      }
+    }
+  }, []);
+
+  const saveReels = (updated: ReelItem[]) => {
+    setReels(updated);
+    localStorage.setItem('him_her_reels_v2', JSON.stringify(updated));
+  };
+
+  const handleAddReel = () => {
+    if (!inputUrl.trim()) return;
+
+    const newReel: ReelItem = {
+      id: Date.now().toString(),
+      title: inputTitle.trim() || `Featured Reel #${reels.length + 1}`,
+      url: inputUrl.trim(),
+      isFavorite: false,
+      dateAdded: new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      })
+    };
+
+    saveReels([newReel, ...reels]);
+    setInputTitle('');
+    setInputUrl('');
+  };
+
+  const toggleFavorite = (id: string) => {
+    const updated = reels.map(reel =>
+      reel.id === id ? { ...reel, isFavorite: !reel.isFavorite } : reel
+    );
+    saveReels(updated);
+  };
+
+  const deleteReel = (id: string) => {
+    saveReels(reels.filter(r => r.id !== id));
+  };
+
+  // Helper to detect platform tag from URL
+  const getPlatformBadge = (url: string) => {
+    const lowerUrl = url.toLowerCase();
+    if (lowerUrl.includes('instagram.com')) return 'Instagram';
+    if (lowerUrl.includes('tiktok.com')) return 'TikTok';
+    if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) return 'YouTube';
+    return 'Link';
+  };
+
+  const filteredReels = filter === 'favorites' ? reels.filter(r => r.isFavorite) : reels;
+
   return (
-    <HimShell>
-      <div className="page-enter mx-auto max-w-3xl">
-        <Link href="/" className="mb-8 inline-flex items-center gap-2 text-xs font-semibold text-muted-foreground no-underline hover:text-primary" data-testid="link-back-home"><ArrowLeft size={14} /> Back to our place</Link>
-        <section className="relative overflow-hidden rounded-[34px] bg-primary px-6 py-16 text-center text-primary-foreground shadow-[0_20px_45px_rgba(64,74,155,.2)] sm:px-16 sm:py-24">
-          <div className="absolute -left-16 -top-20 size-56 rounded-full border-[28px] border-secondary/25" />
-          <div className="absolute -bottom-24 -right-8 size-64 rounded-full border border-primary-foreground/20" />
-          <div className="relative z-[1]">
-            <span className="mx-auto grid size-16 place-items-center rounded-[22px] bg-primary-foreground/10"><Clapperboard size={28} strokeWidth={1.5} /></span>
-            <p className="mono mt-8 text-[10px] uppercase tracking-[.22em] text-primary-foreground/60">Coming soon · for us only</p>
-            <h1 className="display mt-4 text-5xl font-semibold leading-[.95] tracking-[-.05em] sm:text-7xl">Our reels<span className="text-secondary">.</span></h1>
-            <p className="mx-auto mt-6 max-w-md text-sm leading-6 text-primary-foreground/75">A little moving scrapbook for the funny, ordinary, impossible-to-explain moments that are better in motion.</p>
-            <div className="mx-auto mt-10 flex max-w-xs items-center gap-3 rounded-2xl bg-primary-foreground/10 p-3 text-left">
-              <span className="grid size-10 place-items-center rounded-xl bg-secondary text-secondary-foreground"><Play size={16} fill="currentColor" /></span>
-              <div><p className="text-xs font-semibold">The first reel is yours to make</p><p className="mt-0.5 text-[11px] text-primary-foreground/60">We’re setting up the projector.</p></div>
-            </div>
-          </div>
-        </section>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-[24px] border border-card-border bg-card p-5 shadow-[var(--shadow-soft)]"><Sparkles size={18} className="text-secondary-foreground" /><p className="mt-5 display text-xl font-semibold">No audience.</p><p className="mt-1 text-xs leading-5 text-muted-foreground">No performing. Just the two of you and the clips that make you laugh again.</p></div>
-          <Link href="/memories" className="rounded-[24px] border border-card-border bg-[#e4eee6] p-5 no-underline transition-transform hover:-translate-y-1" data-testid="link-reels-memories"><Clapperboard size={18} className="text-primary" /><p className="mt-5 display text-xl font-semibold text-foreground">Browse still moments.</p><p className="mt-1 text-xs leading-5 text-muted-foreground">While we build the moving shelf, visit the memory gallery.</p><span className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-primary">Open memories <ArrowUpRight size={13} /></span></Link>
+    <div className="min-h-screen p-4 md:p-6 bg-rose-50/40 text-left" dir="ltr">
+      <div className="max-w-2xl mx-auto space-y-6 pb-24">
+
+        {/* Header */}
+        <div className="bg-white/85 backdrop-blur-md p-5 rounded-3xl shadow-sm border border-rose-100">
+          <h1 className="text-2xl font-bold text-rose-950">Reels Vault 🎬</h1>
+          <p className="text-xs text-rose-700/80 mt-1">
+            A curated collection of videos and clips shared and loved together.
+          </p>
         </div>
+
+        {/* Add Reel Form */}
+        <div className="bg-white/90 backdrop-blur-md p-5 rounded-3xl shadow-sm border border-rose-100 space-y-3">
+          <h3 className="text-sm font-semibold text-rose-900">Add a new clip to playlist:</h3>
+          <input
+            type="text"
+            placeholder="Clip title or description..."
+            value={inputTitle}
+            onChange={(e) => setInputTitle(e.target.value)}
+            className="w-full px-4 py-2.5 rounded-xl bg-rose-50/50 border border-rose-100 text-sm outline-none focus:border-rose-400 text-rose-950 placeholder:text-rose-300"
+          />
+          <input
+            type="text"
+            placeholder="Video URL (Instagram / TikTok / YouTube)..."
+            value={inputUrl}
+            onChange={(e) => setInputUrl(e.target.value)}
+            className="w-full px-4 py-2.5 rounded-xl bg-rose-50/50 border border-rose-100 text-sm outline-none focus:border-rose-400 text-rose-950 placeholder:text-rose-300"
+          />
+          <button
+            onClick={handleAddReel}
+            disabled={!inputUrl.trim()}
+            className="w-full bg-rose-500 hover:bg-rose-600 disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm transition-all active:scale-98 shadow-sm"
+          >
+            Save Video 📌
+          </button>
+        </div>
+
+        {/* Playlist & Filters */}
+        <div className="flex bg-white/70 backdrop-blur-md p-1.5 rounded-2xl border border-rose-100 gap-2">
+          <button
+            onClick={() => setFilter('all')}
+            className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all ${
+              filter === 'all'
+                ? 'bg-rose-500 text-white shadow-sm'
+                : 'text-rose-800 hover:bg-rose-50'
+            }`}
+          >
+            All Videos ({reels.length})
+          </button>
+          <button
+            onClick={() => setFilter('favorites')}
+            className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all ${
+              filter === 'favorites'
+                ? 'bg-rose-500 text-white shadow-sm'
+                : 'text-rose-800 hover:bg-rose-50'
+            }`}
+          >
+            Favorites ❤️ ({reels.filter(r => r.isFavorite).length})
+          </button>
+        </div>
+
+        {/* Reels List */}
+        {filteredReels.length === 0 ? (
+          <div className="text-center py-12 bg-white/60 backdrop-blur-md rounded-3xl border border-dashed border-rose-200">
+            <p className="text-rose-800 text-sm font-medium">No videos found in this list yet.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filteredReels.map((reel) => (
+              <div
+                key={reel.id}
+                className="bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-rose-100 flex items-center justify-between gap-3 hover:shadow-md transition-all"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] bg-rose-100 text-rose-700 px-2 py-0.5 rounded-md font-bold">
+                      {getPlatformBadge(reel.url)}
+                    </span>
+                    <h4 className="font-bold text-rose-950 text-sm truncate">{reel.title}</h4>
+                  </div>
+                  <a
+                    href={reel.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-rose-500 hover:underline truncate block mt-1"
+                  >
+                    Open Video Link ↗
+                  </a>
+                  <span className="text-[10px] text-stone-400 block mt-1">{reel.dateAdded}</span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => toggleFavorite(reel.id)}
+                    className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-lg transition-transform active:scale-125"
+                    title={reel.isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                  >
+                    {reel.isFavorite ? '❤️' : '🤍'}
+                  </button>
+                  <button
+                    onClick={() => deleteReel(reel.id)}
+                    className="p-2 text-rose-400 hover:text-rose-600 text-xs transition-colors"
+                    title="Delete reel"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
       </div>
-    </HimShell>
+    </div>
   );
 }
