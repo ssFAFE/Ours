@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ImagePlus, Sparkles, Send } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ImagePlus, Send, Trash2, X } from 'lucide-react';
 
 interface Memory {
   id: string;
@@ -12,7 +12,6 @@ interface Memory {
   createdAt: string;
 }
 
-// Fixed user identities - Cannot be changed from the chat interface
 const USER_AHMED = {
   name: 'Ahmed',
   photoKey: 'user_photo_ahmed',
@@ -26,14 +25,22 @@ const USER_MARIAM = {
 };
 
 export default function MemoriesMuseum() {
-  const [memories, setMemories] = useState<Memory[]>([]);
+  const [memories, setMemories] = useState<Memory[]>(() => {
+    const saved = localStorage.getItem('museum_memories');
+    return saved ? JSON.parse(saved) : [];
+  });
   const [activeUser, setActiveUser] = useState<'ahmed' | 'mariam'>('ahmed');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [filter, setFilter] = useState<'all' | 'thought' | 'image'>('all');
 
-  // Helper to get active user's details
+  // Save memories to localStorage whenever state updates
+  useEffect(() => {
+    localStorage.setItem('museum_memories', JSON.stringify(memories));
+  }, [memories]);
+
+  // Helper to get active user's current photo & name
   const getActiveUserInfo = () => {
     const isAhmed = activeUser === 'ahmed';
     const userConfig = isAhmed ? USER_AHMED : USER_MARIAM;
@@ -75,6 +82,10 @@ export default function MemoriesMuseum() {
     setTitle('');
     setContent('');
     setSelectedImage(null);
+  };
+
+  const handleDeleteMemory = (id: string) => {
+    setMemories(memories.filter((item) => item.id !== id));
   };
 
   const filteredMemories = memories.filter((item) => {
@@ -155,9 +166,10 @@ export default function MemoriesMuseum() {
             <img src={selectedImage} alt="Preview" className="h-44 w-full object-cover" />
             <button
               onClick={() => setSelectedImage(null)}
-              className="absolute top-2 right-2 rounded-full bg-black/60 px-2 py-0.5 text-xs text-white"
+              aria-label="Remove image"
+              className="absolute top-2 right-2 rounded-full bg-black/60 p-1 text-white hover:bg-black/80 transition-colors"
             >
-              Cancel
+              <X size={14} />
             </button>
           </div>
         )}
@@ -169,20 +181,21 @@ export default function MemoriesMuseum() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Memory Title (optional)..."
-            className="w-full rounded-2xl border border-rose-100 bg-rose-50/20 px-4 py-2.5 text-xs text-slate-700 outline-none focus:border-rose-400 focus:bg-white"
+            className="w-full rounded-2xl border border-rose-100 bg-rose-50/20 px-4 py-2.5 text-xs text-slate-700 outline-none focus:border-rose-400 focus:bg-white transition-colors"
           />
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Write the story or note here..."
             rows={3}
-            className="w-full rounded-2xl border border-rose-100 bg-rose-50/20 px-4 py-2.5 text-xs text-slate-700 outline-none focus:border-rose-400 focus:bg-white resize-none"
+            className="w-full rounded-2xl border border-rose-100 bg-rose-50/20 px-4 py-2.5 text-xs text-slate-700 outline-none focus:border-rose-400 focus:bg-white resize-none transition-colors"
           />
         </div>
 
         <button
           onClick={handleSaveMemory}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-rose-500 py-3 text-xs font-bold text-white shadow-md hover:bg-rose-600 active:scale-98 transition-all"
+          disabled={!content.trim() && !selectedImage}
+          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-rose-500 py-3 text-xs font-bold text-white shadow-md hover:bg-rose-600 active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
         >
           <Send size={14} />
           <span>Post Memory</span>
@@ -217,7 +230,7 @@ export default function MemoriesMuseum() {
         </button>
       </div>
 
-      {/* 4. Memories Timeline with Sender Avatar & Name */}
+      {/* 4. Memories Timeline */}
       {filteredMemories.length === 0 ? (
         <div className="rounded-3xl border border-dashed border-rose-200 bg-white/40 py-12 text-center text-xs text-slate-400">
           No memories recorded yet. Be the first to share one!
@@ -225,21 +238,28 @@ export default function MemoriesMuseum() {
       ) : (
         <div className="space-y-4">
           {filteredMemories.map((mem) => (
-            <div key={mem.id} className="rounded-2xl border border-rose-100 bg-white p-4 shadow-sm space-y-3">
-              {/* Sender Info (Avatar + Name + Timestamp) */}
-              <div className="flex items-center gap-3 border-b border-rose-50 pb-2.5">
-                <img
-                  src={mem.senderPhoto}
-                  alt={mem.senderName}
-                  className="size-9 rounded-full object-cover border border-rose-200 shadow-xs"
-                />
-                <div className="flex-1">
-                  <h4 className="text-xs font-bold text-slate-800">{mem.senderName}</h4>
-                  <span className="text-[10px] text-slate-400">{mem.createdAt}</span>
+            <div key={mem.id} className="rounded-2xl border border-rose-100 bg-white p-4 shadow-sm space-y-3 relative group">
+              <div className="flex items-center justify-between border-b border-rose-50 pb-2.5">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={mem.senderPhoto}
+                    alt={mem.senderName}
+                    className="size-9 rounded-full object-cover border border-rose-200 shadow-xs"
+                  />
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-800">{mem.senderName}</h4>
+                    <span className="text-[10px] text-slate-400">{mem.createdAt}</span>
+                  </div>
                 </div>
+                <button
+                  onClick={() => handleDeleteMemory(mem.id)}
+                  aria-label="Delete memory"
+                  className="text-slate-300 hover:text-rose-500 transition-colors p-1"
+                >
+                  <Trash2 size={14} />
+                </button>
               </div>
 
-              {/* Memory Content */}
               {mem.imageUrl && (
                 <img src={mem.imageUrl} alt={mem.title || 'Memory'} className="h-44 w-full rounded-xl object-cover" />
               )}

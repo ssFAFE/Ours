@@ -94,7 +94,7 @@ export default function Home() {
     createMood.mutate({ data: { person, mood: selectedMood } }, {
       onSuccess: () => {
         setSelectedMood('');
-        void queryClient.invalidateQueries({ queryKey: overviewQuery.queryKey });
+        void queryClient.invalidateQueries(); // invalidates active query cache
       },
     });
   }
@@ -106,7 +106,7 @@ export default function Home() {
     createTask.mutate({ data: { title } }, {
       onSuccess: () => {
         setTaskTitle('');
-        void queryClient.invalidateQueries({ queryKey: tasksQuery.queryKey });
+        void queryClient.invalidateQueries();
       },
     });
   }
@@ -121,6 +121,8 @@ export default function Home() {
           <div className="relative">
             <button 
               onClick={() => setShowBgSelector(!showBgSelector)}
+              aria-expanded={showBgSelector}
+              aria-label="Toggle Theme Atmosphere"
               className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-full border border-border bg-card/80 backdrop-blur-sm shadow-sm hover:bg-muted transition-all active:scale-95"
             >
               <Palette size={14} className="text-primary" /> Theme Atmosphere
@@ -347,6 +349,7 @@ export default function Home() {
               <button 
                 type="submit" 
                 disabled={!taskTitle.trim() || createTask.isPending} 
+                aria-label="Add task"
                 className="grid size-10 shrink-0 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-sm hover:opacity-90 disabled:opacity-40 transition-all active:scale-95"
               >
                 <Plus size={18} />

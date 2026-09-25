@@ -35,16 +35,16 @@ export default function Settings() {
 
   // Load stored settings on mount
   useEffect(() => {
-    const savedP1 = localStorage.getItem('app_partner1');
-    const savedP2 = localStorage.getItem('app_partner2');
-    const savedAv1 = localStorage.getItem('app_avatar1');
-    const savedAv2 = localStorage.getItem('app_avatar2');
+    const savedP1 = localStorage.getItem('app_partner1') || localStorage.getItem('user_photo_ahmed');
+    const savedP2 = localStorage.getItem('app_partner2') || localStorage.getItem('user_photo_mariam');
+    const savedAv1 = localStorage.getItem('app_avatar1') || localStorage.getItem('user_photo_ahmed');
+    const savedAv2 = localStorage.getItem('app_avatar2') || localStorage.getItem('user_photo_mariam');
     const savedTheme = localStorage.getItem('app_theme');
     const savedBg = localStorage.getItem('app_custom_bg');
     const savedMotion = localStorage.getItem('app_reduced_motion');
 
-    if (savedP1) setPartner1(savedP1);
-    if (savedP2) setPartner2(savedP2);
+    if (savedP1) setPartner1(localStorage.getItem('app_partner1') || 'Ahmed');
+    if (savedP2) setPartner2(localStorage.getItem('app_partner2') || 'Mariam');
     if (savedAv1) setAvatar1(savedAv1);
     if (savedAv2) setAvatar2(savedAv2);
     if (savedTheme) setSelectedTheme(savedTheme);
@@ -56,8 +56,14 @@ export default function Settings() {
   const handleSaveProfile = () => {
     localStorage.setItem('app_partner1', partner1);
     localStorage.setItem('app_partner2', partner2);
-    if (avatar1) localStorage.setItem('app_avatar1', avatar1);
-    if (avatar2) localStorage.setItem('app_avatar2', avatar2);
+    if (avatar1) {
+      localStorage.setItem('app_avatar1', avatar1);
+      localStorage.setItem('user_photo_ahmed', avatar1);
+    }
+    if (avatar2) {
+      localStorage.setItem('app_avatar2', avatar2);
+      localStorage.setItem('user_photo_mariam', avatar2);
+    }
     setIsEditingProfile(false);
   };
 
@@ -75,9 +81,11 @@ export default function Settings() {
         if (target === '1') {
           setAvatar1(result);
           localStorage.setItem('app_avatar1', result);
+          localStorage.setItem('user_photo_ahmed', result);
         } else {
           setAvatar2(result);
           localStorage.setItem('app_avatar2', result);
+          localStorage.setItem('user_photo_mariam', result);
         }
       };
       reader.readAsDataURL(file);
