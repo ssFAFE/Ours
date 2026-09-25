@@ -78,11 +78,20 @@ export default function Home() {
 
   const memories = memoriesQuery.data ?? [];
   const tasks = tasksQuery.data ?? [];
-  const overview = overviewQuery.data;
+
+  // بيانات افتراضية في حالة عدم توفر الاستجابة من السيرفر
+  const overview = overviewQuery.data ?? {
+    togetherDays: 0,
+    anniversary: 'N/A',
+    todayPrompt: 'Connecting to server...',
+    photoStreak: 0,
+    chatStreak: 0,
+    reelsStreak: 0
+  };
+
   const completedTasks = useMemo(() => tasks.filter((task) => task.completed).length, [tasks]);
 
   if (overviewQuery.isLoading) return <HimShell><LoadingState /></HimShell>;
-  if (overviewQuery.isError || !overview) return <HimShell><ErrorState onRetry={() => overviewQuery.refetch()} /></HimShell>;
 
   // Dynamic milestone progress calculation (365, 730, 1095... etc.)
   const currentDays = overview.togetherDays || 0;
